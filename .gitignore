@@ -1,0 +1,17 @@
+*.xlsx
+*.npz
+*.doc
+*.xls
+*.pdf
+*.pkl
+*.sh
+*.txt
+*.gif
+*.png
+*.csv
+*.zip
+*.ppt
+*.pptx
+data/
+__pycache__/
+*.egg-info/
