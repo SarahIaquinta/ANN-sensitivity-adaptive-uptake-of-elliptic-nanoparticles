@@ -104,8 +104,8 @@ def compute_output_ANN_new_settings(x):
 
 def extract_predictions(complete_filename):
     with open(complete_filename, "rb") as f:
-        [y_test, y_pred, Q2] = pickle.load(f)
-    return y_test, y_pred, Q2
+        [y_val, y_pred, Q2] = pickle.load(f)
+    return y_val, y_pred, Q2
 
 def export_settings_for_metamodels(datapresetting, training_amount, shuffled_sample, X_train, X_test, y_train, y_test):
     size, _ = np.shape(shuffled_sample)

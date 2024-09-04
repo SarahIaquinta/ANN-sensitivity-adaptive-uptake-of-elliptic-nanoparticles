@@ -319,13 +319,38 @@ class DataPreSetting:
         datasize, _ = np.shape(shuffled_sample)
         # datasize = 1000
         shuffled_testing_input_sample = ot.Sample(
-            shuffled_sample[int(self.training_amount * datasize + 1) : datasize, 0:6]
+            shuffled_sample[int(self.training_amount * datasize + 1) :  datasize, 0:6]
         )
         shuffled_testing_output_sample = ot.Sample(
             shuffled_sample[int(self.training_amount * datasize + 1) : datasize, -2]
         )
         return shuffled_testing_input_sample, shuffled_testing_output_sample
 
+    def extract_validating_data_mechanoadaptation_vs_passive_elliptic(self, shuffled_sample):
+        """Extracts a proportion (1 - training_amount) of the shuffled_data to test the metamodel
+
+        Parameters:
+        ----------
+        shuffled_sample : ot class
+            Shuffled input dataset
+
+        Returns:
+        -------
+        shuffled_testing_input_sample: ot class
+            Part of the input data used to test the metamodel
+        shuffled_testing_output_sample: ot class
+            Output data corresponding to the shuffled_testing_input_sample
+        """
+
+        datasize, _ = np.shape(shuffled_sample)
+        # datasize = 1000
+        shuffled_testing_input_sample = ot.Sample(
+            shuffled_sample[int((self.training_amount+0.05) * datasize + 1) : datasize, 0:6]
+        )
+        shuffled_testing_output_sample = ot.Sample(
+            shuffled_sample[int((self.training_amount+0.05) * datasize + 1) : datasize, -2]
+        )
+        return shuffled_testing_input_sample, shuffled_testing_output_sample
 
     def extract_testing_data_mechanoadaptation_vs_passive_circular(self, shuffled_sample):
         """Extracts a proportion (1 - training_amount) of the shuffled_data to test the metamodel

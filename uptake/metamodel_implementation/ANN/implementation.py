@@ -137,13 +137,19 @@ def ANN_gridsearch_mechanoadaptation_vs_passive_elliptic_new_settings(
         16, 8, 4, 2
     )
     net4 = (8,8,8)
-    net5 = (16,16,16)
+    # net5 = (16,16,16)
 
     net5 = (64, 32, 16, 8, 4, 2, 1)
     net6 = (64, 32, 16, 8, 4, 2)
+    # param_list = {
+    #     "hidden_layer_sizes": [net1, net2, net3, net4, net5, net6],
+    #     "activation": ["relu","tanh"],
+    #     "solver": ["adam", "lbfgs"],
+    #     "learning_rate": ["adaptive"],
+    # }
     param_list = {
-        "hidden_layer_sizes": [net1, net2, net3, net4, net5, net6],
-        "activation": ["relu","tanh"],
+        "hidden_layer_sizes": [ net4],
+        "activation": ["tanh"],
         "solver": ["adam", "lbfgs"],
         "learning_rate": ["adaptive"],
     }
@@ -429,6 +435,15 @@ def routine_mechanoadaptation_vs_passive_elliptic_new_settings(fonts, createfigu
     )
     complete_filename_ANN = "predictions_ANN_mechanoadaptation_vs_passive_elliptic_new_settings-v2.pkl"
     
+    ANN_gridsearch_mechanoadaptation_vs_passive_elliptic_new_settings(
+        X_train_mechanoadaptation_vs_passive_elliptic,
+        X_test_mechanoadaptation_vs_passive_elliptic,
+        y_train_mechanoadaptation_vs_passive_elliptic,
+        y_test_mechanoadaptation_vs_passive_elliptic,
+        complete_filename_ANN,
+    )
+    complete_filename_grid = "grid_search_article-v2.pkl"
+
     scaler, grid = ANN_miu.extract_gridsearch(complete_filename_grid)
     scaled_x_test = scaler.transform(X_test_mechanoadaptation_vs_passive_elliptic)
     y_pred = grid.predict(scaled_x_test)
@@ -437,13 +452,7 @@ def routine_mechanoadaptation_vs_passive_elliptic_new_settings(fonts, createfigu
     Q2 = r2_score(y_pred, y_test_mechanoadaptation_vs_passive_elliptic)
     print("Q2 ANN : ", Q2)
     
-    ANN_gridsearch_mechanoadaptation_vs_passive_elliptic_new_settings(
-        X_train_mechanoadaptation_vs_passive_elliptic,
-        X_test_mechanoadaptation_vs_passive_elliptic,
-        y_train_mechanoadaptation_vs_passive_elliptic,
-        y_test_mechanoadaptation_vs_passive_elliptic,
-        complete_filename_ANN,
-    )
+
     (
         y_test_mechanoadaptation_vs_passive_elliptic,
         y_pred_mechanoadaptation_vs_passive_elliptic,
@@ -512,7 +521,7 @@ if __name__ == "__main__":
 
     # routine_mechanoadaptation_vs_passive_elliptic(fonts, createfigure, savefigure, pixels)
 
-    # routine_mechanoadaptation_vs_passive_elliptic_new_settings(fonts, createfigure, savefigure, pixels)
+    routine_mechanoadaptation_vs_passive_elliptic_new_settings(fonts, createfigure, savefigure, pixels)
 
     complete_filename_grid = "grid_search_article-v2.pkl"
     # observe_results_gridsearch_learning_rate(complete_filename_grid, fonts, createfigure, savefigure)

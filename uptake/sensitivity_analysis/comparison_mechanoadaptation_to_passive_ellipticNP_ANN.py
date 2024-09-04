@@ -13,7 +13,8 @@ import uptake.metamodel_implementation.utils as miu
 from uptake.figures.utils import CreateFigure, Fonts, SaveFigure
 from uptake.metamodel_implementation.metamodel_creation import DataPreSetting
 from uptake.metamodel_implementation.metamodel_validation import MetamodelPostTreatment
-
+import shap
+import matplotlib.pyplot as plt
 
 class Distribution:
     def __init__(self):
@@ -1390,6 +1391,41 @@ def plot_comparison_indices_piechart(
     filename_first = "sobol_first_indices_Kriging_piechart_ANN_mechanoadaptation_vs_passive_elliptic_new_settings-v2"
     savefigure.save_as_png(fig_first, filename_first + str(pixels) + "p")
 
+def compute_shapley_values():
+    shap.initjs()
+    complete_filename_grid = "grid_search_article-v2.pkl"
+    sc_X, grid = ANN_miu.extract_gridsearch(complete_filename_grid)
+    knn = grid
+    filename_qMC_mechanoadaptation_vs_passive_elliptic_new_settings = (
+        "dataset_for_ANN_mechanadaptation_vs_passive_elliptic_newsettings_size4.txt"
+    )
+    training_amount_mechanoadaptation_vs_passive_elliptic = 0.9
+    datapresetting_mechanoadaptation_vs_passive_elliptic_new_settings = DataPreSetting(
+        filename_qMC_mechanoadaptation_vs_passive_elliptic_new_settings,
+        training_amount_mechanoadaptation_vs_passive_elliptic,
+    )
+    shuffled_sample = datapresetting_mechanoadaptation_vs_passive_elliptic_new_settings.shuffle_dataset_from_datafile()
+
+    (
+        X_train_mechanoadaptation_vs_passive_elliptic,
+        y_train_mechanoadaptation_vs_passive_elliptic,
+    ) = datapresetting_mechanoadaptation_vs_passive_elliptic_new_settings.extract_training_data_from_shuffled_dataset_mechanoadaptation_vs_passive_elliptic(
+        shuffled_sample
+    )
+    (
+        X_test_mechanoadaptation_vs_passive_elliptic,
+        y_test_mechanoadaptation_vs_passive_elliptic,
+    ) = datapresetting_mechanoadaptation_vs_passive_elliptic_new_settings.extract_testing_data_mechanoadaptation_vs_passive_elliptic(
+        shuffled_sample
+    )
+    X_trainscaled = sc_X.fit_transform(X_train_mechanoadaptation_vs_passive_elliptic)
+    X_testscaled = sc_X.transform(X_test_mechanoadaptation_vs_passive_elliptic)
+    ex = shap.KernelExplainer(knn.predict, X_trainscaled)
+    shap_values = ex.shap_values(X_testscaled)
+    shap.summary_plot(shap_values, X_testscaled)
+    plt.show()
+
+
 
 if __name__ == "__main__":
     type_of_metamodel = "Kriging"
@@ -1447,6 +1483,8 @@ if __name__ == "__main__":
     complete_filename_grid = "grid_search_article-v2.pkl"
     scaler, grid = ANN_miu.extract_gridsearch(complete_filename_grid)
     sensitivity_experiment_size = 10000
+    compute_shapley_values()
+    print('hello')
     # test_saltelli_algorithm(distribution, scaler, grid, sensitivity_experiment_size, createfigure, savefigure, fonts, pixels)
     # compute_sensitivity_algo_Saltelli(distribution, sensitivity_experiment_size)
 

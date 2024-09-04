@@ -482,6 +482,7 @@ def plot_comparison_PDFs_surrogates_new_settings(
     experiment_input = ot.MonteCarloExperiment(distribution_input, int(1e3))
     sample_input_MC = experiment_input.generate()
     degree = 5
+    training_amount = 0.9
     complete_pkl_filename_pce = miu.create_pkl_name(
         "PCE_mechanoadaptation_vs_passive_elliptic_new_settings_article" + str(degree), training_amount
     )
@@ -524,13 +525,13 @@ def plot_comparison_PDFs_surrogates_new_settings(
         output_ANN[i, 0] = output_ANN_before_reshape[i]
     X_plot = np.linspace(0, 1, 2000)[:, None]
 
-    kde_model = KernelDensity(kernel="gaussian", bandwidth=0.02).fit(output_model)
+    kde_model = KernelDensity(kernel="gaussian", bandwidth=0.04).fit(output_model)
     log_dens_model = kde_model.score_samples(X_plot)
-    kde_kriging = KernelDensity(kernel="gaussian", bandwidth=0.02).fit(output_kriging)
+    kde_kriging = KernelDensity(kernel="gaussian", bandwidth=0.04).fit(output_kriging)
     log_dens_kriging = kde_kriging.score_samples(X_plot)
-    kde_pce = KernelDensity(kernel="gaussian", bandwidth=0.02).fit(output_pce)
+    kde_pce = KernelDensity(kernel="gaussian", bandwidth=0.04).fit(output_pce)
     log_dens_pce = kde_pce.score_samples(X_plot)
-    kde_ANN = KernelDensity(kernel="gaussian", bandwidth=0.02).fit(output_ANN)
+    kde_ANN = KernelDensity(kernel="gaussian", bandwidth=0.04).fit(output_ANN)
     log_dens_ANN = kde_ANN.score_samples(X_plot)
     palette_set2 = sns.color_palette("Set2")
     lightgray = palette_set2[-1]
@@ -595,7 +596,7 @@ def plot_comparison_PDFs_surrogates_new_settings(
     ax.legend(prop=fonts.serif(), loc="upper right", framealpha=0.7)
     ax.grid(linestyle="--")
     savefigure.save_as_png(
-        fig, "PDF_metamodel_ANN_mechanoadaptation_vs_passive_elliptic_new_settings_size4_article-v2" + str(pixels)
+        fig, "PDF_metamodel_ANN_mechanoadaptation_vs_passive_elliptic_new_settings_size4_article-v2_bw004" + str(pixels)
     )
 
 
@@ -637,38 +638,53 @@ if __name__ == "__main__":
 
     # define_test_samples_for_comparison_new_settings()
     size = 4
-    (
-        datapresetting,
-        training_amount,
-        shuffled_sample,
-        X_train,
-        X_test,
-        y_train,
-        y_test,
-    ) = ANN_miu.extract_settings_for_comparison_surrogates_new_settings(size)
-    metamodelcreation = MetamodelCreation(X_train, y_train)
+    # (
+    #     datapresetting,
+    #     training_amount,
+    #     shuffled_sample,
+    #     X_train,
+    #     X_test,
+    #     y_train,
+    #     y_test,
+    # ) = ANN_miu.extract_settings_for_comparison_surrogates_new_settings(size)
+    # metamodelcreation = MetamodelCreation(X_train, y_train)
     metamodelvalidation = MetamodelValidation()
     
     
     # build_all_predictions_new_settings(
     #     datapresetting, metamodelcreation, metamodelposttreatment, shuffled_sample, X_train, X_test, y_train, y_test
     # )
-    y_pred_ANN, y_pred_Kriging, y_pred_PCE, Q2_ANN, Q2_Kriging, Q2_PCE = extract_all_predictions_new_settings(
-        datapresetting, metamodelvalidation, metamodelposttreatment, shuffled_sample, X_train, X_test, y_train, y_test
-    )
+    # y_pred_ANN, y_pred_Kriging, y_pred_PCE, Q2_ANN, Q2_Kriging, Q2_PCE = extract_all_predictions_new_settings(
+    #     datapresetting, metamodelvalidation, metamodelposttreatment, shuffled_sample, X_train, X_test, y_train, y_test
+    # )
 
-    plot_comparison_predictions_surrogates_new_settings(
-        y_test,
-        y_pred_ANN,
-        y_pred_Kriging,
-        y_pred_PCE,
-        Q2_ANN,
-        Q2_Kriging,
-        Q2_PCE,
-        createfigure,
-        savefigure,
-        fonts,
-        pixels,
+    # plot_comparison_predictions_surrogates_new_settings(
+    #     y_test,
+    #     y_pred_ANN,
+    #     y_pred_Kriging,
+    #     y_pred_PCE,
+    #     Q2_ANN,
+    #     Q2_Kriging,
+    #     Q2_PCE,
+    #     createfigure,
+    #     savefigure,
+    #     fonts,
+    #     pixels,
+    # )
+    filename_qMC_mechanoadaptation_vs_passive_elliptic = "dataset_for_ANN_mechanadaptation_vs_passive_elliptic_newsettings_size4.txt"
+    training_amount_mechanoadaptation_vs_passive_elliptic = 0.9
+    datapresetting_mechanoadaptation_vs_passive_elliptic = DataPreSetting(
+        filename_qMC_mechanoadaptation_vs_passive_elliptic,
+        training_amount_mechanoadaptation_vs_passive_elliptic,
     )
-
-    # plot_comparison_PDFs_surrogates_new_settings(X_train, y_train, createfigure, savefigure, fonts, pixels)
+    shuffled_sample = datapresetting_mechanoadaptation_vs_passive_elliptic.shuffle_dataset_from_datafile()
+    (
+        X_train_mechanoadaptation_vs_passive_elliptic,
+        y_train_mechanoadaptation_vs_passive_elliptic,
+    ) = datapresetting_mechanoadaptation_vs_passive_elliptic.extract_training_data_from_shuffled_dataset_mechanoadaptation_vs_passive_elliptic(
+        shuffled_sample
+    )
+    X_train = X_train_mechanoadaptation_vs_passive_elliptic
+    y_train = y_train_mechanoadaptation_vs_passive_elliptic 
+    plot_comparison_PDFs_surrogates_new_settings(X_train, y_train, createfigure, savefigure, fonts, pixels)
+    print('hello')
